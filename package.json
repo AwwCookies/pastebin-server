@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Pastebin Server",
   "main": "app.js",
-  "repository": "https://github.com/AwwCookies/Pastebin-v2",
+  "repository": "https://github.com/AwwCookies/pastebin-server",
   "author": "AwwCookies",
   "license": "MIT",
   "scripts": {

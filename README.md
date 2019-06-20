@@ -1,1 +1,1 @@
-# Pastebin V2
+# Pastebin Server
