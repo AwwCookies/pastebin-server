@@ -7,67 +7,69 @@ const { prisma } = require("./generated/prisma-client");
 const config = require("./config");
 
 describe("Test /api/v1/auth/signup", () => {
-    it("Should return 409 if username already taken", async (done) => {
-        const user = await prisma.createUser({
-            username: "jest-test",
-            password: bcrypt.hashSync("jest-test", 10),
-            email: "jest@test.com"
-        });
-        request(app).get("/api/v1/auth/signup")
-            .send({ username: user.username, email: "some@fake.email", password: "hunter2" })
-            .then((response) => {
-                expect(response.status).toBe(409);
-                expect(response.body.statusText).toEqual("Username taken");
-                done();
+    describe("Method POST", () => {
+        it("Should return 409 if username already taken", async (done) => {
+            const user = await prisma.createUser({
+                username: "jest-test",
+                password: bcrypt.hashSync("jest-test", 10),
+                email: "jest@test.com"
             });
-    });
-    it("Should return 409 if email already taken", async (done) => {
-        const user = await prisma.createUser({
-            username: "jest-test",
-            password: bcrypt.hashSync("jest-test", 10),
-            email: "jest@test.com"
-        });
-        request(app).get("/api/v1/auth/signup")
-            .send({ username: "jest-test2", email: user.email, password: "hunter2" })
-            .then((response) => {
-                expect(response.status).toBe(409);
-                expect(response.body.statusText).toEqual("Email taken");
-                done();
-            });
-    });
-    it("Returns 400 with invalid data", (done) => {
-        request(app).get("/api/v1/auth/signup")
-            .send({})
-            .then((response) => {
-                expect(response.status).toBe(400);
-                done();
-            });
-    });
-
-    it("Returns 201 with valid data", (done) => {
-        request(app).get("/api/v1/auth/signup")
-            .send({ username: "jest-test", password: "jest-test", email: "jest@test.com" })
-            .then((response) => {
-                expect(response.status).toBe(201);
-                done();
-            });
-    });
-
-    it("Returns a valid user model after adding new user to database", (done) => {
-        request(app).get("/api/v1/auth/signup")
-            .send({ username: "jest-test", password: "jest-test", email: "jest@test.com" })
-            .then((response) => {
-                expect(response.body.user).toEqual({
-                    username: "jest-test",
-                    // Should be bcrypt hash
-                    password: expect.stringMatching(/^\$2[ayb]\$.{56}$/),
-                    createdAt: expect.anything(),
-                    id: expect.anything(),
-                    role: "USER",
-                    email: "jest@test.com"
+            request(app).post("/api/v1/auth/signup")
+                .send({ username: user.username, email: "some@fake.email", password: "hunter2" })
+                .then((response) => {
+                    expect(response.status).toBe(409);
+                    expect(response.body.statusText).toEqual("Username taken");
+                    done();
                 });
-                done();
+        });
+        it("Should return 409 if email already taken", async (done) => {
+            const user = await prisma.createUser({
+                username: "jest-test",
+                password: bcrypt.hashSync("jest-test", 10),
+                email: "jest@test.com"
             });
+            request(app).post("/api/v1/auth/signup")
+                .send({ username: "jest-test2", email: user.email, password: "hunter2" })
+                .then((response) => {
+                    expect(response.status).toBe(409);
+                    expect(response.body.statusText).toEqual("Email taken");
+                    done();
+                });
+        });
+        it("Returns 400 with invalid data", (done) => {
+            request(app).post("/api/v1/auth/signup")
+                .send({})
+                .then((response) => {
+                    expect(response.status).toBe(400);
+                    done();
+                });
+        });
+
+        it("Returns 201 with valid data", (done) => {
+            request(app).post("/api/v1/auth/signup")
+                .send({ username: "jest-test", password: "jest-test", email: "jest@test.com" })
+                .then((response) => {
+                    expect(response.status).toBe(201);
+                    done();
+                });
+        });
+
+        it("Returns a valid user model after adding new user to database", (done) => {
+            request(app).post("/api/v1/auth/signup")
+                .send({ username: "jest-test", password: "jest-test", email: "jest@test.com" })
+                .then((response) => {
+                    expect(response.body.user).toEqual({
+                        username: "jest-test",
+                        // Should be bcrypt hash
+                        password: expect.stringMatching(/^\$2[ayb]\$.{56}$/),
+                        createdAt: expect.anything(),
+                        id: expect.anything(),
+                        role: "USER",
+                        email: "jest@test.com"
+                    });
+                    done();
+                });
+        });
     });
 });
 
@@ -80,9 +82,22 @@ describe("Test /api/v1/auth", () => {
                 done();
             });
     });
-    it("Should return status 401 on failed login", async (done) => {
+    it("Should return status 401 on failed login (email)", async (done) => {
         request(app).post("/api/v1/auth")
             .send({ username: "**JEST TEST**", password: "LET ME IN!!!" })
+            .then((response) => {
+                expect(response.status).toBe(401);
+                done();
+            });
+    });
+    it("Should return status 401 on failed login (password)", async (done) => {
+        const user = await prisma.createUser({
+            username: "jest-test",
+            password: bcrypt.hashSync("jest-test", 10),
+            email: "jest@test.com"
+        });
+        request(app).post("/api/v1/auth")
+            .send({ username: user.username, password: "LET ME IN!!!" })
             .then((response) => {
                 expect(response.status).toBe(401);
                 done();

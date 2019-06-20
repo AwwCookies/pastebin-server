@@ -56,7 +56,7 @@ function adminRequired(req, res, next) {
     }
 }
 
-app.get("/api/v1/auth/signup", async (req, res) => {
+app.post("/api/v1/auth/signup", async (req, res) => {
     const {
         username,
         password,
