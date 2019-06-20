@@ -1,0 +1,33 @@
+type User {
+  id: ID! @id
+  username: String! @unique
+  password: String!
+  email: String! @unique
+  role: Role! @default(value: USER)
+  pastes: [Paste!]!
+  createdAt: DateTime! @createdAt
+}
+
+type Paste {
+  id: ID! @id
+  content: String!
+  author: User! @relation(link: INLINE)
+  createdAt: DateTime! @createdAt
+  access: Access! @default(value: PUBLIC)
+}
+
+type Log {
+  id: ID! @id
+  message: String!
+  createdAt: DateTime! @createdAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Access {
+  PRIVATE
+  PUBLIC
+}

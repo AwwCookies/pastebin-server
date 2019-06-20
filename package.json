@@ -1,0 +1,26 @@
+{
+  "name": "pastebin-server",
+  "version": "1.0.0",
+  "description": "Pastebin Server",
+  "main": "app.js",
+  "repository": "https://github.com/AwwCookies/Pastebin-v2",
+  "author": "AwwCookies",
+  "license": "MIT",
+  "scripts": {
+    "reset": "prisma reset",
+    "start": "node server.js",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "supertest": "^4.0.2",
+    "jest": "^24.8.0"
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "prisma-client-lib": "^1.34.0"
+  }
+}
