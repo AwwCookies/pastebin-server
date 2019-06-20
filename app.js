@@ -209,7 +209,6 @@ app.get("/api/v1/users", [loginRequired, adminRequired], async (req, res) => {
 app.get("/api/v1/user/:username", loginRequired, async (req, res) => {
     // if owner
     const user = await prisma.user({ username: req.params.username });
-    console.log(user);
     if (!user) {
         res.status(400).json({
             statusText: "Invalid username",
