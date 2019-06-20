@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const { prisma } = require("./generated/prisma-client");
+const config = require("./config");
 
 describe("Test /api/v1/auth/signup", () => {
     it("Should return 409 if username already taken", async (done) => {
@@ -117,7 +118,7 @@ describe("Test /api/v1/paste", () => {
                 email: "jest@test.com"
             });
             request(app).post("/api/v1/paste")
-                .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, "monkaS"))
+                .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, config.secert))
                 .send({})
                 .then((response) => {
                     expect(response.status).toBe(400);
@@ -134,7 +135,7 @@ describe("Test /api/v1/paste", () => {
                 email
             });
             request(app).post("/api/v1/paste")
-                .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, "monkaS"))
+                .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, config.secert))
                 .send({ content: "[jest-test]" })
                 .then((response) => {
                     expect(response.body).toEqual({
@@ -158,7 +159,7 @@ describe("Test /api/v1/paste", () => {
                 email: "jest@test.com"
             });
             request(app).get(`/api/v1/paste/**FAKE ID**`)
-                .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, "monkaS"))
+                .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, config.secert))
                 .then((response) => {
                     expect(response.status).toBe(404);
                     done();
@@ -207,7 +208,7 @@ describe("Test /api/v1/paste", () => {
                 }
             });
             request(app).delete(`/api/v1/paste/${paste.id}`)
-                .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, "monkaS"))
+                .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, config.secert))
                 .then((response) => {
                     expect(response.status).toBe(200);
                     expect(response.body).toEqual({
@@ -224,7 +225,7 @@ describe("Test /api/v1/paste", () => {
                 email: "jest@test.com"
             });
             request(app).delete(`/api/v1/paste/**FAKE ID**`)
-                .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, "monkaS"))
+                .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, config.secert))
                 .then((response) => {
                     expect(response.status).toBe(404);
                     done();
@@ -247,7 +248,7 @@ describe("Test /api/v1/paste", () => {
                 }
             });
             request(app).delete(`/api/v1/paste/${paste.id}`)
-                .set('Authorization', 'Bearer ' + jwt.sign({ id: user2.id }, "monkaS"))
+                .set('Authorization', 'Bearer ' + jwt.sign({ id: user2.id }, config.secert))
                 .then(async (response) => {
                     expect(response.status).toBe(403);
                     // clean up
@@ -273,7 +274,7 @@ describe("Test /api/v1/paste", () => {
                 }
             });
             request(app).delete(`/api/v1/paste/${paste.id}`)
-                .set('Authorization', 'Bearer ' + jwt.sign({ id: admin.id }, "monkaS"))
+                .set('Authorization', 'Bearer ' + jwt.sign({ id: admin.id }, config.secert))
                 .then(async (response) => {
                     expect(response.status).toBe(200);
                     // clean up
@@ -309,7 +310,7 @@ describe("Test /api/v1/pastes", () => {
             access: "PRIVATE"
         });
         request(app).get("/api/v1/pastes")
-            .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, "monkaS"))
+            .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, config.secert))
             .then((response) => {
                 expect(response.status).toBe(200);
                 expect(response.body).toEqual({
@@ -348,7 +349,7 @@ describe("Test /api/v1/pastes", () => {
             access: "PRIVATE"
         });
         request(app).get("/api/v1/pastes")
-            .set('Authorization', 'Bearer ' + jwt.sign({ id: admin.id }, "monkaS"))
+            .set('Authorization', 'Bearer ' + jwt.sign({ id: admin.id }, config.secert))
             .then((response) => {
                 expect(response.status).toBe(200);
                 expect(response.body).toEqual({
@@ -371,7 +372,7 @@ describe("Test /api/v1/users", () => {
             email,
         });
         request(app).get("/api/v1/users")
-            .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, "monkaS"))
+            .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, config.secert))
             .then((response) => {
                 expect(response.status).toBe(403);
                 done();
@@ -388,7 +389,7 @@ describe("Test /api/v1/users", () => {
             role: "ADMIN"
         });
         request(app).get("/api/v1/users")
-            .set('Authorization', 'Bearer ' + jwt.sign({ id: admin.id }, "monkaS"))
+            .set('Authorization', 'Bearer ' + jwt.sign({ id: admin.id }, config.secert))
             .then((response) => {
                 expect(response.status).toBe(200);
                 expect(Array.isArray(response.body.users)).toBe(true);
@@ -405,7 +406,7 @@ describe("Test /api/v1/user/:username", () => {
             email: "jest@test.com"
         });
         request(app).get(`/api/v1/user/${user.username}`)
-            .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, "monkaS"))
+            .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, config.secert))
             .then((response) => {
                 expect(response.status).toBe(200);
                 expect(response.body).toEqual({
@@ -428,7 +429,7 @@ describe("Test /api/v1/user/:username", () => {
             role: "ADMIN"
         });
         request(app).get(`/api/v1/user/${user.username}`)
-            .set('Authorization', 'Bearer ' + jwt.sign({ id: admin.id }, "monkaS"))
+            .set('Authorization', 'Bearer ' + jwt.sign({ id: admin.id }, config.secert))
             .then((response) => {
                 expect(response.status).toBe(200);
                 expect(response.body).toEqual({
@@ -450,7 +451,7 @@ describe("Test /api/v1/user/:username", () => {
             email: "jest@admin.test.com",
         });
         request(app).get(`/api/v1/user/${user.username}`)
-            .set('Authorization', 'Bearer ' + jwt.sign({ id: user2.id }, "monkaS"))
+            .set('Authorization', 'Bearer ' + jwt.sign({ id: user2.id }, config.secert))
             .then((response) => {
                 expect(response.status).toBe(200);
                 expect(response.body).toEqual({
@@ -469,7 +470,7 @@ describe("Test /api/v1/user/:username", () => {
             email: "jest@test.com"
         });
         request(app).get("/api/v1/user/***fake user***")
-            .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, "monkaS"))
+            .set('Authorization', 'Bearer ' + jwt.sign({ id: user.id }, config.secert))
             .then((response) => {
                 expect(response.status).toBe(400);
                 done();
