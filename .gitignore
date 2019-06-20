@@ -2,4 +2,5 @@
 /generated
 /coverage
 /ssl
+.DS_Store
 yarn.lock
