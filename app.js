@@ -101,7 +101,7 @@ app.post("/api/v1/auth", async (req, res) => {
         const user = await prisma.user({ username });
         if (user) {
             if (bcrypt.compareSync(password, user.password)) {
-                const token = jwt.sign({ id: user.id }, app.secert);
+                const token = jwt.sign({ id: user.id, username: user.username }, app.secert);
                 res.json({
                     statusText: "You've been logged in!",
                     token: token
@@ -187,9 +187,23 @@ app.get("/api/v1/pastes", loginRequired, async (req, res) => {
     if (req.user.role === "USER") {
         // all public pastes
         pastes = await prisma.pastes({ where: { access: "PUBLIC" } });
+        for (let paste of pastes) {
+            let author = await prisma.paste({ id: paste.id }).author();
+            console.log(author);
+            pastesWithAuthor.push({ ...paste, author: author.id });
+        }
     } else if (req.user.role === "ADMIN") {
         // all pastes
         pastes = await prisma.pastes();
+        let pastesWithAuthor = [];
+        for (let paste of pastes) {
+            let author = await prisma.paste({ id: paste.id }).author();
+            console.log(author)
+            pastesWithAuthor.push({ ...paste, author: author.id });
+        }
+        // pastes.forEach(async (paste) => {
+
+        pastes = pastesWithAuthor;
     }
 
     res.json({

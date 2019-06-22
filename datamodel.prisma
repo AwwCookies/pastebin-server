@@ -20,6 +20,8 @@ type Log {
   id: ID! @id
   message: String!
   createdAt: DateTime! @createdAt
+  user: User @relation(link: INLINE)
+  ipaddress: String!
 }
 
 enum Role {
